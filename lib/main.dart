@@ -1,3 +1,4 @@
+import 'package:chat_online_app_firebase/pages/chat_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -5,7 +6,14 @@ import 'package:flutter/material.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  FirebaseFirestore.instance.collection("col").doc("doc").set({"texto":"Luan"});
+  FirebaseFirestore.instance
+      .collection("mensagens")
+      .snapshots()
+      .listen((event) {
+    event.docs.forEach((element) {
+      print(element.data());
+    });
+  });
   runApp(const MyApp());
 }
 
@@ -20,8 +28,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: Container(color: Colors.greenAccent,),
+      home: ChatScreen(),
     );
   }
 }
-
