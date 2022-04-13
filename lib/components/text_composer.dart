@@ -10,25 +10,36 @@ class _TextComposerState extends State<TextComposer> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.photo_camera),
-        ),
-        Expanded(
-          child: TextField(
-            decoration: InputDecoration.collapsed(hintText: 'Mensagem'),
-            onChanged: (text) {
-              setState(() {
-                _isComposing = text.isNotEmpty;
-              });
-            },
-            onSubmitted: (text) {},
+    return Container(
+      color: Colors.black87,
+      margin: const EdgeInsets.symmetric(horizontal: 8),
+      child: Row(
+        children: [
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.photo_camera),
           ),
-        ),
-        IconButton(onPressed: _isComposing ? () {} : null, icon: Icon(Icons.send))
-      ],
+          Expanded(
+            child: TextField(
+              style: TextStyle(color: Colors.white),
+              decoration: InputDecoration.collapsed(
+                  hintText: 'Mensagem',
+                  hintStyle: TextStyle(color: Colors.white)),
+              onChanged: (text) {
+                setState(() {
+                  _isComposing = text.isNotEmpty;
+                });
+              },
+              onSubmitted: (text) {},
+            ),
+          ),
+          IconButton(
+            disabledColor: Colors.white24,
+            onPressed: _isComposing ? () {} : null,
+            icon: Icon(Icons.send),
+          )
+        ],
+      ),
     );
   }
 }
