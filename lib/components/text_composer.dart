@@ -37,8 +37,6 @@ class _TextComposerState extends State<TextComposer> {
               final XFile? imgFile = (await _picker.pickImage(source: ImageSource.camera));
               if (imgFile == null) return;
               widget.sendMessage(imgFile: imgFile);
-
-
             },
             icon: const Icon(Icons.photo_camera),
           ),

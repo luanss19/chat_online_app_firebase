@@ -12,25 +12,27 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-
   Future<void> _sendMessage({String? text, XFile? imgFile}) async {
+    Map<String, dynamic> data = {};
 
-    if(imgFile != null){
+    if (imgFile != null) {
       FirebaseStorage storage = FirebaseStorage.instance;
       String? url;
-      Reference ref = storage.ref().child('imagens').child("image" + DateTime.now().toString());
-      UploadTask task = ref.putFile(File(imgFile.path));
+      Reference ref = storage
+          .ref()
+          .child('imagens')
+          .child("image" + DateTime.now().toString());
 
+      TaskSnapshot task =
+          await ref.putFile(File(imgFile.path)).whenComplete((){});
+      url = await task.ref.getDownloadURL();
+      data['imgUrl'] = url;
 
-      task.whenComplete(() async{
-        url = await ref.getDownloadURL();
-      });
-      print('URL ABAIXO');
-      print(url);
     }
-        FirebaseFirestore.instance.collection('messages').add({
-          'text':text
-        });
+
+    if (text != null) data['text'] = text;
+
+    FirebaseFirestore.instance.collection('messages').add(data);
   }
 
   @override
@@ -40,7 +42,36 @@ class _ChatScreenState extends State<ChatScreen> {
         title: Text('User Name'),
         elevation: 0,
       ),
-      body: TextComposer(_sendMessage),
+      body: Column(
+        children: [
+          Expanded(
+            child: StreamBuilder<QuerySnapshot>(
+              stream:  FirebaseFirestore.instance.collection('messages').snapshots(),
+              builder: (context, snapshot){
+                switch(snapshot.connectionState){
+                  case ConnectionState.none:
+                  case ConnectionState.waiting:
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  default:
+                    List<DocumentSnapshot> documents = snapshot.data!.docs.reversed.toList();
+                    return ListView.builder(
+                        itemCount: documents.length,
+                        reverse: true,
+                        itemBuilder: (context,index){
+                          return ListTile(
+                            title: Text(documents[index]['text']),
+                          );
+                        }
+                        );
+                }
+              },
+            ),
+          ),
+          TextComposer(_sendMessage),
+        ],
+      ),
     );
   }
 }
